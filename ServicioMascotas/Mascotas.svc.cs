@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
 using Npgsql;
+using ServicioMascotas.Models;
 
 namespace ServicioMascotas
 {
@@ -14,6 +15,37 @@ namespace ServicioMascotas
 	public class Mascotas : IMascotas
 	{
         private string _connectionString = ConfigurationManager.ConnectionStrings["PostgreSQLConn"].ConnectionString;
+                public List<Mascota> ObtenerMascotas()
+        {
+            List<Mascota> lista = new List<Mascota>();
+
+            using (var conn = new NpgsqlConnection(_connectionString))
+            {
+                conn.Open();
+                string query = "SELECT id, nombre, especie, raza, edad, peso, sexo, id_usuario FROM mascotas";
+
+                using (var cmd = new NpgsqlCommand(query, conn))
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        lista.Add(new Mascota
+                        {
+                            Id = reader.GetInt32(0),
+                            Nombre = reader.GetString(1),
+                            Especie = reader.GetString(2),
+                            Raza = reader.GetString(3),
+                            Edad = reader.GetInt32(4),
+                            Peso = reader.GetDecimal(5),
+                            Sexo = reader.GetChar(6),
+                            IdUsuario = reader.GetInt32(7)
+                        });
+                    }
+                }
+            }
+
+            return lista;
+        }
 
         public string ProbarConexion()
         {

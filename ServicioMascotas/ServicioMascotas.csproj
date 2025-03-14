@@ -100,6 +100,7 @@
     <Compile Include="Mascotas.svc.cs">
       <DependentUpon>Mascotas.svc</DependentUpon>
     </Compile>
+    <Compile Include="Models\Mascota.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

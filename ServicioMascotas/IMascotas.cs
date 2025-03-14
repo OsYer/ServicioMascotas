@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.Text;
+using ServicioMascotas.Models;
 
 namespace ServicioMascotas
 {
@@ -15,5 +16,9 @@ namespace ServicioMascotas
         [OperationContract]
         [WebGet(ResponseFormat = WebMessageFormat.Json)]
 		string ProbarConexion();
-	}
+
+        [OperationContract]
+        [WebGet(ResponseFormat = WebMessageFormat.Json)]
+        List<Mascota> ObtenerMascotas();
+    }
 }
