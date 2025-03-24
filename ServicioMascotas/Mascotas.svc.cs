@@ -11,8 +11,7 @@ namespace ServicioMascotas
 {
     public class Mascotas : IMascotas
     {
-        private string _connectionString = ConfigurationManager.ConnectionStrings["PostgreSQLConn"].ConnectionString;
-
+        private string _connectionString = "Host=localhost;Port=5432;Username=postgres;Password=admin;Database=mascotasdb;";
         private NpgsqlConnection ObtenerConexion()
         {
             return new NpgsqlConnection(_connectionString);
