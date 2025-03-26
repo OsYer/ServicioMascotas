@@ -15,5 +15,7 @@ namespace ServicioMascotas.Models
         public decimal Peso { get; set; }
         public char Sexo { get; set; }
         public int IdUsuario { get; set; }
+        public DateTime FechaRegistro { get; set; }
+
     }
 }

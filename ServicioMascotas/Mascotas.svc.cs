@@ -11,7 +11,7 @@ namespace ServicioMascotas
 {
     public class Mascotas : IMascotas
     {
-        private string _connectionString = "Host=localhost;Port=5432;Username=postgres;Password=admin;Database=mascotasdb;";
+        private string _connectionString = "Host=192.168.15.225;Port=5432;Username=postgres;Password=admin;Database=mascotas_db;";
         private NpgsqlConnection ObtenerConexion()
         {
             return new NpgsqlConnection(_connectionString);
@@ -77,7 +77,7 @@ namespace ServicioMascotas
         {
             if (mascota == null || mascota.Id <= 0) return false;
 
-            const string query = "UPDATE mascotas SET nombre = @nombre, especie = @especie, raza = @raza, edad = @edad, peso = @peso, sexo = @sexo, id_usuario = @id_usuario WHERE id = @id";
+            const string query = "UPDATE mascotas SET nombre = @nombre, especie = @especie, raza = @raza, edad = @edad, peso = @peso, sexo = @sexo WHERE id = @id";
 
             try
             {
@@ -93,8 +93,6 @@ namespace ServicioMascotas
                         cmd.Parameters.AddWithValue("@edad", mascota.Edad);
                         cmd.Parameters.AddWithValue("@peso", mascota.Peso);
                         cmd.Parameters.AddWithValue("@sexo", mascota.Sexo);
-                        cmd.Parameters.AddWithValue("@id_usuario", mascota.IdUsuario);
-
                         return cmd.ExecuteNonQuery() > 0;
                     }
                 }
@@ -130,7 +128,8 @@ namespace ServicioMascotas
                                      Edad = r.GetInt32(4),
                                      Peso = r.GetDecimal(5),
                                      Sexo = r.GetChar(6),
-                                     IdUsuario = r.GetInt32(7)
+                                     IdUsuario = r.GetInt32(7),
+                                     FechaRegistro = r.GetDateTime(8)
                                  }).ToList();
                     }
                 }
