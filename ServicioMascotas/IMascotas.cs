@@ -36,5 +36,10 @@ namespace ServicioMascotas
         [OperationContract]
         [WebInvoke(Method = "DELETE", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped, UriTemplate = "eliminarmascota")]
         bool EliminarMascota(Mascota mascota);
+
+        [OperationContract]
+        [WebInvoke(Method = "OPTIONS", UriTemplate = "*")]
+        void HandleOptionsRequest();
+
     }
 }

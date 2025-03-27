@@ -96,6 +96,8 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CorsBehaviorExtension.cs" />
+    <Compile Include="EnableCorsBehavior.cs" />
     <Compile Include="IMascotas.cs" />
     <Compile Include="Mascotas.svc.cs">
       <DependentUpon>Mascotas.svc</DependentUpon>

@@ -4,14 +4,22 @@ using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.ServiceModel;
+using System.ServiceModel.Web;
 using Npgsql;
 using ServicioMascotas.Models;
 
 namespace ServicioMascotas
 {
+    [ServiceBehavior]
     public class Mascotas : IMascotas
     {
         private string _connectionString = "Host=192.168.15.225;Port=5432;Username=postgres;Password=admin;Database=mascotas_db;";
+        public void HandleOptionsRequest()
+        {
+            WebOperationContext.Current.OutgoingResponse.StatusCode = System.Net.HttpStatusCode.OK;
+        }
+
+
         private NpgsqlConnection ObtenerConexion()
         {
             return new NpgsqlConnection(_connectionString);
