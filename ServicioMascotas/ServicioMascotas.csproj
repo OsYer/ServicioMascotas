@@ -93,17 +93,23 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Mascotas.svc" />
+    <Content Include="Usuarios.svc" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CorsBehaviorExtension.cs" />
     <Compile Include="EnableCorsBehavior.cs" />
     <Compile Include="IMascotas.cs" />
+    <Compile Include="IUsuarios.cs" />
     <Compile Include="Mascotas.svc.cs">
       <DependentUpon>Mascotas.svc</DependentUpon>
     </Compile>
     <Compile Include="Models\Mascota.cs" />
+    <Compile Include="Models\Usuario.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Usuarios.svc.cs">
+      <DependentUpon>Usuarios.svc</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
