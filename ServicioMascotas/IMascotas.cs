@@ -41,5 +41,13 @@ namespace ServicioMascotas
         [WebInvoke(Method = "OPTIONS", UriTemplate = "*")]
         void HandleOptionsRequest();
 
+        [OperationContract]
+        [WebInvoke(Method = "GET", ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped, UriTemplate = "obtenermascotasactualizadas?desde={fecha}")]
+        List<Mascota> ObtenerMascotasActualizadas(string fecha);
+        [OperationContract]
+        [WebInvoke(Method = "GET", ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped, UriTemplate = "obtenermascotaseliminadas?desde={fecha}")]
+        List<int> ObtenerMascotasEliminadas(string fecha);
+
+
     }
 }

@@ -16,6 +16,8 @@ namespace ServicioMascotas.Models
         public char Sexo { get; set; }
         public int IdUsuario { get; set; }
         public DateTime FechaRegistro { get; set; }
+        public DateTime? FechaEdicion { get; set; }
+        public bool Activo { get; set; }
 
     }
 }
