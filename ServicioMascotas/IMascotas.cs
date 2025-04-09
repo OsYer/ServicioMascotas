@@ -17,11 +17,6 @@ namespace ServicioMascotas
         [WebInvoke(Method = "GET", ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped, UriTemplate = "probarconexion")]
         string ProbarConexion();
 
-        // Método para obtener todas las mascotas
-        [OperationContract]
-        [WebInvoke(Method = "GET", ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped, UriTemplate = "obtenermascotas")]
-        List<Mascota> ObtenerMascotas();
-
         // Método para agregar una nueva mascota
         [OperationContract]
         [WebInvoke(Method = "POST", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped, UriTemplate = "agregarmascota")]
@@ -42,11 +37,8 @@ namespace ServicioMascotas
         void HandleOptionsRequest();
 
         [OperationContract]
-        [WebInvoke(Method = "GET", ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped, UriTemplate = "obtenermascotasactualizadas?desde={fecha}")]
-        List<Mascota> ObtenerMascotasActualizadas(string fecha);
-
-        [OperationContract]
         [WebInvoke(Method = "GET", ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped, UriTemplate = "obtenermascotasfiltro?fecha={fecha}")]
-        List<Mascota> ObtenerMascotasFiltro(string fecha);
+        List<Mascota> ObtenerMascotasFiltro(DateTime? fecha);
+
     }
 }

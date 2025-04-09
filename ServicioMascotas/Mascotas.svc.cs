@@ -116,101 +116,14 @@ namespace ServicioMascotas
                 return false;
             }
         }
-
-        public List<Mascota> ObtenerMascotas()
-        {
-            List<Mascota> lista = new List<Mascota>();
-            const string query = "SELECT id, nombre, especie, raza, edad, peso, sexo, id_usuario, fecha_registro, fecha_edicion, activo FROM mascotas WHERE activo = true";
-
-            try
-            {
-                using (var conn = ObtenerConexion())
-                {
-                    conn.Open();
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            lista.Add(new Mascota
-                            {
-                                Id = Convert.ToInt32(reader["id"]),
-                                Nombre = reader["nombre"].ToString(),
-                                Especie = reader["especie"].ToString(),
-                                Raza = reader["raza"].ToString(),
-                                Edad = Convert.ToInt32(reader["edad"]),
-                                Peso = Convert.ToDecimal(reader["peso"]),
-                                Sexo = Convert.ToChar(reader["sexo"]),
-                                IdUsuario = Convert.ToInt32(reader["id_usuario"]),
-                                FechaRegistro = Convert.ToDateTime(reader["fecha_registro"]),
-                                FechaEdicion = reader["fecha_edicion"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["fecha_edicion"]),
-                                Activo = Convert.ToBoolean(reader["activo"])
-                            });
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error en ObtenerMascotas: {ex.Message}");
-            }
-
-            return lista;
-        }
-        public List<Mascota> ObtenerMascotasActualizadas(string fecha)
-        {
-            List<Mascota> lista = new List<Mascota>();
-            if (!DateTime.TryParse(fecha, out DateTime desde)) return lista;
-
-            const string query = "SELECT id, nombre, especie, raza, edad, peso, sexo, id_usuario, fecha_registro, fecha_edicion, activo FROM mascotas WHERE (fecha_edicion > @desde OR fecha_registro > @desde) AND activo = true";
-
-            try
-            {
-                using (var conn = ObtenerConexion())
-                {
-                    conn.Open();
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@desde", desde);
-                        using (var reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                lista.Add(new Mascota
-                                {
-                                    Id = Convert.ToInt32(reader["id"]),
-                                    Nombre = reader["nombre"].ToString(),
-                                    Especie = reader["especie"].ToString(),
-                                    Raza = reader["raza"].ToString(),
-                                    Edad = Convert.ToInt32(reader["edad"]),
-                                    Peso = Convert.ToDecimal(reader["peso"]),
-                                    Sexo = Convert.ToChar(reader["sexo"]),
-                                    IdUsuario = Convert.ToInt32(reader["id_usuario"]),
-                                    FechaRegistro = Convert.ToDateTime(reader["fecha_registro"]),
-                                    FechaEdicion = reader["fecha_edicion"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["fecha_edicion"]),
-                                    Activo = Convert.ToBoolean(reader["activo"])
-                                });
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error en ObtenerMascotasActualizadas: {ex.Message}");
-            }
-
-            return lista;
-        }
-        public List<Mascota> ObtenerMascotasFiltro(string fecha = null)
+        public List<Mascota> ObtenerMascotasFiltro(DateTime? fecha = null)
         {
             List<Mascota> lista = new List<Mascota>();
             string query;
-            DateTime desde;
 
-            if (!string.IsNullOrWhiteSpace(fecha) && DateTime.TryParse(fecha, out desde))
+            if (fecha.HasValue)
             {
-                query = "SELECT id, nombre, especie, raza, edad, peso, sexo, id_usuario, fecha_registro, fecha_edicion, activo FROM mascotas WHERE (fecha_edicion > @desde OR fecha_registro > @desde) AND activo = true";
+                query = "SELECT id, nombre, especie, raza, edad, peso, sexo, id_usuario, fecha_registro, fecha_edicion, activo FROM mascotas WHERE fecha_edicion > @desde AND activo = true";
             }
             else
             {
@@ -224,9 +137,9 @@ namespace ServicioMascotas
                     conn.Open();
                     using (var cmd = new NpgsqlCommand(query, conn))
                     {
-                        if (!string.IsNullOrWhiteSpace(fecha) && DateTime.TryParse(fecha, out desde))
+                        if (fecha.HasValue)
                         {
-                            cmd.Parameters.AddWithValue("@desde", desde);
+                            cmd.Parameters.AddWithValue("@desde", fecha.Value);
                         }
 
                         using (var reader = cmd.ExecuteReader())
