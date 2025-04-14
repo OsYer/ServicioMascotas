@@ -15,7 +15,7 @@ namespace ServicioMascotas
 
         [OperationContract]
         [WebInvoke(Method = "POST", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped, UriTemplate = "agregarusuario")]
-        bool AgregarUsuario(Usuario usuario);
+        string AgregarUsuario(Usuario usuario);
 
         [OperationContract]
         [WebInvoke(Method = "PUT", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped, UriTemplate = "actualizarusuario")]

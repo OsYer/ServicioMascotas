@@ -37,8 +37,12 @@ namespace ServicioMascotas
         void HandleOptionsRequest();
 
         [OperationContract]
-        [WebInvoke(Method = "GET", ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped, UriTemplate = "obtenermascotasfiltro?fecha={fecha}")]
-        List<Mascota> ObtenerMascotasFiltro(DateTime? fecha);
+        [WebInvoke(Method = "POST", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped, UriTemplate = "obtenermascotasfiltro")]
+        List<Mascota> ObtenerMascotasFiltro(FiltroMascotas filtro);
+        }
+    public class FiltroMascotas
+        {
+        public DateTime? Fecha { get; set; }
+        }
 
     }
-}

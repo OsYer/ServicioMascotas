@@ -12,7 +12,7 @@ namespace ServicioMascotas
     [ServiceBehavior]
     public class Usuarios : IUsuarios
     {
-        private string _connectionString = "Host=192.168.15.225;Port=5432;Username=postgres;Password=admin;Database=mascotas_db;";
+        private string _connectionString = "Host=192.168.1.47;Port=5432;Username=postgres;Password=admin;Database=servicio_mascotas;";
 
         private NpgsqlConnection ObtenerConexion()
         {
@@ -58,30 +58,39 @@ namespace ServicioMascotas
             return lista;
         }
 
-        public bool AgregarUsuario(Usuario usuario)
-        {
-            const string query = "INSERT INTO usuarios (nombre, correo, telefono, direccion) VALUES (@nombre, @correo, @telefono, @direccion)";
-            try
+        public string AgregarUsuario(Usuario usuario)
             {
-                using (var conn = ObtenerConexion())
+            const string query = "INSERT INTO usuarios (nombre, correo, telefono, direccion, fecha_registro) VALUES (@nombre, @correo, @telefono, @direccion, @fecha_registro)";
+            try
                 {
+                using (var conn = ObtenerConexion())
+                    {
                     conn.Open();
                     using (var cmd = new NpgsqlCommand(query, conn))
-                    {
+                        {
                         cmd.Parameters.AddWithValue("@nombre", usuario.Nombre);
                         cmd.Parameters.AddWithValue("@correo", usuario.Correo);
                         cmd.Parameters.AddWithValue("@telefono", (object)usuario.Telefono ?? DBNull.Value);
                         cmd.Parameters.AddWithValue("@direccion", (object)usuario.Direccion ?? DBNull.Value);
-                        return cmd.ExecuteNonQuery() > 0;
+                        cmd.Parameters.AddWithValue("@fecha_registro", DateTime.UtcNow);
+
+                        int filas = cmd.ExecuteNonQuery();
+                        if (filas > 0)
+                            {
+                            return "✅ Usuario insertado correctamente.";
+                            }
+                        else
+                            {
+                            return "⚠️ No se insertó ningún registro.";
+                            }
+                        }
                     }
                 }
-            }
             catch (Exception ex)
-            {
-                Console.WriteLine($"Error en AgregarUsuario: {ex.Message}");
-                return false;
+                {
+                return $"❌ Error en AgregarUsuario: {ex.Message}";
+                }
             }
-        }
 
         public bool ActualizarUsuario(Usuario usuario)
         {
