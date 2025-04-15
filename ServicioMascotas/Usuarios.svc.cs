@@ -12,7 +12,7 @@ namespace ServicioMascotas
     [ServiceBehavior]
     public class Usuarios : IUsuarios
     {
-        private string _connectionString = "Host=192.168.1.47;Port=5432;Username=postgres;Password=admin;Database=servicio_mascotas;";
+        private string _connectionString = "Host=192.168.15.225;Port=5432;Username=postgres;Password=admin;Database=servicio_mascotas;";
 
         private NpgsqlConnection ObtenerConexion()
         {

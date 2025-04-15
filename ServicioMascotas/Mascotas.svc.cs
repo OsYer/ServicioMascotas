@@ -13,7 +13,7 @@ namespace ServicioMascotas
     [ServiceBehavior]
     public class Mascotas : IMascotas
     {
-        private string _connectionString = "Host=192.168.1.47;Port=5432;Username=postgres;Password=admin;Database=servicio_mascotas;";
+        private string _connectionString = "Host=192.168.15.225;Port=5432;Username=postgres;Password=admin;Database=servicio_mascotas;";
         public void HandleOptionsRequest()
         {
             WebOperationContext.Current.OutgoingResponse.StatusCode = System.Net.HttpStatusCode.OK;
@@ -125,7 +125,7 @@ namespace ServicioMascotas
 
             if (fecha.HasValue)
                 {
-                query = "SELECT id, nombre, especie, raza, edad, peso, sexo, id_usuario, fecha_registro, fecha_edicion, activo FROM mascotas WHERE fecha_edicion >= @desde AND activo = true";
+                query = "SELECT id, nombre, especie, raza, edad, peso, sexo, id_usuario, fecha_registro, fecha_edicion, activo FROM mascotas WHERE fecha_edicion > @desde AND activo = true";
                 }
             else
                 {
@@ -174,6 +174,81 @@ namespace ServicioMascotas
 
             return lista;
             }
+        public List<Mascota> ObtenerMascotasFiltroFecha(StringFechaFiltro filtro)
+        {
+            List<Mascota> lista = new List<Mascota>();
+            string query;
+            DateTime? fecha = null;
+
+            if (!string.IsNullOrWhiteSpace(filtro?.Fecha))
+            {
+                try
+                {
+                    fecha = DateTime.Parse(filtro.Fecha, null, System.Globalization.DateTimeStyles.RoundtripKind);
+                    Console.WriteLine($"✔ Fecha recibida y parseada correctamente: {fecha.Value.ToString("o")}");
+                }
+                catch (FormatException)
+                {
+                    Console.WriteLine("❌ Formato de fecha inválido: " + filtro.Fecha);
+                    throw new WebFaultException<string>(
+                        "Formato de fecha inválido. Usa formato ISO 8601, por ejemplo: '2025-04-14T22:38:25Z'",
+                        System.Net.HttpStatusCode.BadRequest
+                    );
+                }
+            }
+
+            if (fecha.HasValue)
+            {
+                query = "SELECT id, nombre, especie, raza, edad, peso, sexo, id_usuario, fecha_registro, fecha_edicion, activo FROM mascotas WHERE fecha_edicion > @desde AND activo = true";
+            }
+            else
+            {
+                query = "SELECT id, nombre, especie, raza, edad, peso, sexo, id_usuario, fecha_registro, fecha_edicion, activo FROM mascotas WHERE activo = true";
+            }
+
+            try
+            {
+                using (var conn = ObtenerConexion())
+                {
+                    conn.Open();
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        if (fecha.HasValue)
+                        {
+                            cmd.Parameters.AddWithValue("@desde", fecha.Value);
+                        }
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                lista.Add(new Mascota
+                                {
+                                    Id = Convert.ToInt32(reader["id"]),
+                                    Nombre = reader["nombre"].ToString(),
+                                    Especie = reader["especie"].ToString(),
+                                    Raza = reader["raza"].ToString(),
+                                    Edad = Convert.ToInt32(reader["edad"]),
+                                    Peso = Convert.ToDecimal(reader["peso"]),
+                                    Sexo = Convert.ToChar(reader["sexo"]),
+                                    IdUsuario = Convert.ToInt32(reader["id_usuario"]),
+                                    FechaRegistro = Convert.ToDateTime(reader["fecha_registro"]),
+                                    FechaEdicion = reader["fecha_edicion"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["fecha_edicion"]),
+                                    Activo = Convert.ToBoolean(reader["activo"])
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en ObtenerMascotasFiltroFecha: {ex.Message}");
+            }
+
+            return lista;
+        }
+
         public string ProbarConexion()
         {
             try

@@ -37,12 +37,23 @@ namespace ServicioMascotas
         void HandleOptionsRequest();
 
         [OperationContract]
-        [WebInvoke(Method = "POST", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped, UriTemplate = "obtenermascotasfiltro")]
+        [WebInvoke(Method = "POST",UriTemplate = "obtenermascotasfiltro",RequestFormat = WebMessageFormat.Json,ResponseFormat = WebMessageFormat.Json,BodyStyle = WebMessageBodyStyle.WrappedRequest)]
         List<Mascota> ObtenerMascotasFiltro(FiltroMascotas filtro);
-        }
+
+
+        [OperationContract]
+        [WebInvoke(Method = "POST", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped, UriTemplate = "obtenermascotasfiltrofecha")]
+        List<Mascota> ObtenerMascotasFiltroFecha(StringFechaFiltro filtro);
+       
+    }
     public class FiltroMascotas
         {
         public DateTime? Fecha { get; set; }
         }
-
+    [DataContract]
+    public class StringFechaFiltro
+    {
+        [DataMember]
+        public string Fecha { get; set; }
     }
+}
