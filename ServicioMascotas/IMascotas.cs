@@ -20,7 +20,7 @@ namespace ServicioMascotas
         // Método para agregar una nueva mascota
         [OperationContract]
         [WebInvoke(Method = "POST", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped, UriTemplate = "agregarmascota")]
-        bool AgregarMascota(Mascota mascota);
+        ResultadoOperacion AgregarMascota(Mascota mascota);
 
         // Método para actualizar una mascota
         [OperationContract]
@@ -37,19 +37,30 @@ namespace ServicioMascotas
         void HandleOptionsRequest();
 
         [OperationContract]
-        [WebInvoke(Method = "POST",UriTemplate = "obtenermascotasfiltro",RequestFormat = WebMessageFormat.Json,ResponseFormat = WebMessageFormat.Json,BodyStyle = WebMessageBodyStyle.WrappedRequest)]
+        [WebInvoke(Method = "POST", UriTemplate = "obtenermascotasfiltro", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.WrappedRequest)]
         List<Mascota> ObtenerMascotasFiltro(FiltroMascotas filtro);
 
 
         [OperationContract]
         [WebInvoke(Method = "POST", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped, UriTemplate = "obtenermascotasfiltrofecha")]
         List<Mascota> ObtenerMascotasFiltroFecha(StringFechaFiltro filtro);
-       
+
     }
+    [DataContract]
+    public class ResultadoOperacion
+    {
+        [DataMember]
+        public bool Exito { get; set; }
+
+        [DataMember]
+        public string Mensaje { get; set; }
+    }
+
     public class FiltroMascotas
-        {
+    {
         public DateTime? Fecha { get; set; }
-        }
+    }
+
     [DataContract]
     public class StringFechaFiltro
     {

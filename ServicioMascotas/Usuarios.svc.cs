@@ -59,15 +59,15 @@ namespace ServicioMascotas
         }
 
         public string AgregarUsuario(Usuario usuario)
-            {
+        {
             const string query = "INSERT INTO usuarios (nombre, correo, telefono, direccion, fecha_registro) VALUES (@nombre, @correo, @telefono, @direccion, @fecha_registro)";
             try
-                {
+            {
                 using (var conn = ObtenerConexion())
-                    {
+                {
                     conn.Open();
                     using (var cmd = new NpgsqlCommand(query, conn))
-                        {
+                    {
                         cmd.Parameters.AddWithValue("@nombre", usuario.Nombre);
                         cmd.Parameters.AddWithValue("@correo", usuario.Correo);
                         cmd.Parameters.AddWithValue("@telefono", (object)usuario.Telefono ?? DBNull.Value);
@@ -76,21 +76,21 @@ namespace ServicioMascotas
 
                         int filas = cmd.ExecuteNonQuery();
                         if (filas > 0)
-                            {
+                        {
                             return "✅ Usuario insertado correctamente.";
-                            }
+                        }
                         else
-                            {
+                        {
                             return "⚠️ No se insertó ningún registro.";
-                            }
                         }
                     }
                 }
-            catch (Exception ex)
-                {
-                return $"❌ Error en AgregarUsuario: {ex.Message}";
-                }
             }
+            catch (Exception ex)
+            {
+                return $"❌ Error en AgregarUsuario: {ex.Message}";
+            }
+        }
 
         public bool ActualizarUsuario(Usuario usuario)
         {

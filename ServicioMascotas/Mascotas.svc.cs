@@ -25,11 +25,16 @@ namespace ServicioMascotas
             return new NpgsqlConnection(_connectionString);
         }
 
-        public bool AgregarMascota(Mascota mascota)
+        public ResultadoOperacion AgregarMascota(Mascota mascota)
         {
-            if (mascota == null) return false;
+            if (mascota == null)
+            {
+                return new ResultadoOperacion { Exito = false, Mensaje = "La mascota es nula." };
+            }
 
-            const string query = @"INSERT INTO mascotas (nombre, especie, raza, edad, peso, sexo, id_usuario, fecha_registro, fecha_edicion, activo) VALUES (@nombre, @especie, @raza, @edad, @peso, @sexo, @id_usuario, @fecha_registro, @fecha_edicion, true)";
+            const string query = @"INSERT INTO mascotas 
+        (nombre, especie, raza, edad, peso, sexo, id_usuario, fecha_registro, fecha_edicion, activo) 
+        VALUES (@nombre, @especie, @raza, @edad, @peso, @sexo, @id_usuario, @fecha_registro, @fecha_edicion, true)";
 
             try
             {
@@ -45,19 +50,30 @@ namespace ServicioMascotas
                         cmd.Parameters.AddWithValue("@raza", mascota.Raza);
                         cmd.Parameters.AddWithValue("@edad", mascota.Edad);
                         cmd.Parameters.AddWithValue("@peso", mascota.Peso);
-                        cmd.Parameters.AddWithValue("@sexo", mascota.Sexo);
+                        cmd.Parameters.AddWithValue("@sexo", Convert.ToChar(mascota.Sexo));
                         cmd.Parameters.AddWithValue("@id_usuario", mascota.IdUsuario);
                         cmd.Parameters.AddWithValue("@fecha_registro", ahoraUtc);
                         cmd.Parameters.AddWithValue("@fecha_edicion", ahoraUtc);
 
-                        return cmd.ExecuteNonQuery() > 0;
+                        int filas = cmd.ExecuteNonQuery();
+                        if (filas > 0)
+                        {
+                            return new ResultadoOperacion { Exito = true, Mensaje = "Mascota registrada correctamente." };
+                        }
+                        else
+                        {
+                            return new ResultadoOperacion { Exito = false, Mensaje = "No se insertó ningún registro." };
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error en AgregarMascota: {ex.Message}");
-                return false;
+                return new ResultadoOperacion
+                {
+                    Exito = false,
+                    Mensaje = "Error al insertar mascota: " + ex.Message
+                };
             }
         }
 
@@ -104,7 +120,7 @@ namespace ServicioMascotas
                         cmd.Parameters.AddWithValue("@raza", mascota.Raza);
                         cmd.Parameters.AddWithValue("@edad", mascota.Edad);
                         cmd.Parameters.AddWithValue("@peso", mascota.Peso);
-                        cmd.Parameters.AddWithValue("@sexo", mascota.Sexo); 
+                        cmd.Parameters.AddWithValue("@sexo", mascota.Sexo);
                         cmd.Parameters.AddWithValue("@fecha_edicion", DateTime.UtcNow);
                         return cmd.ExecuteNonQuery() > 0;
                     }
@@ -117,39 +133,45 @@ namespace ServicioMascotas
             }
         }
         public List<Mascota> ObtenerMascotasFiltro(FiltroMascotas filtro)
-            {
+        {
             List<Mascota> lista = new List<Mascota>();
             string query;
-
             DateTime? fecha = filtro?.Fecha;
 
+            if (fecha.HasValue && fecha.Value.Kind != DateTimeKind.Utc)
+            {
+                // Convertimos a UTC si es necesario
+                fecha = DateTime.SpecifyKind(fecha.Value, DateTimeKind.Utc);
+                Console.WriteLine($"✔ Fecha convertida a UTC: {fecha.Value.ToString("o")}");
+            }
+
             if (fecha.HasValue)
-                {
+            {
                 query = "SELECT id, nombre, especie, raza, edad, peso, sexo, id_usuario, fecha_registro, fecha_edicion, activo FROM mascotas WHERE fecha_edicion > @desde AND activo = true";
-                }
+            }
             else
-                {
+            {
                 query = "SELECT id, nombre, especie, raza, edad, peso, sexo, id_usuario, fecha_registro, fecha_edicion, activo FROM mascotas WHERE activo = true";
-                }
+            }
 
             try
-                {
+            {
                 using (var conn = ObtenerConexion())
-                    {
+                {
                     conn.Open();
                     using (var cmd = new NpgsqlCommand(query, conn))
-                        {
+                    {
                         if (fecha.HasValue)
-                            {
+                        {
                             cmd.Parameters.AddWithValue("@desde", fecha.Value);
-                            }
+                        }
 
                         using (var reader = cmd.ExecuteReader())
-                            {
+                        {
                             while (reader.Read())
-                                {
+                            {
                                 lista.Add(new Mascota
-                                    {
+                                {
                                     Id = Convert.ToInt32(reader["id"]),
                                     Nombre = reader["nombre"].ToString(),
                                     Especie = reader["especie"].ToString(),
@@ -161,19 +183,20 @@ namespace ServicioMascotas
                                     FechaRegistro = Convert.ToDateTime(reader["fecha_registro"]),
                                     FechaEdicion = reader["fecha_edicion"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["fecha_edicion"]),
                                     Activo = Convert.ToBoolean(reader["activo"])
-                                    });
-                                }
+                                });
                             }
                         }
                     }
                 }
+            }
             catch (Exception ex)
-                {
-                Console.WriteLine($"Error en ObtenerMascotasFiltro: {ex.Message}");
-                }
+            {
+                Console.WriteLine($"❌ Error en ObtenerMascotasFiltro: {ex.Message}");
+            }
 
             return lista;
-            }
+        }
+
         public List<Mascota> ObtenerMascotasFiltroFecha(StringFechaFiltro filtro)
         {
             List<Mascota> lista = new List<Mascota>();
