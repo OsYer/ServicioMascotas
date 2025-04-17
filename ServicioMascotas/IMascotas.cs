@@ -40,7 +40,6 @@ namespace ServicioMascotas
         [WebInvoke(Method = "POST", UriTemplate = "obtenermascotasfiltro", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.WrappedRequest)]
         List<Mascota> ObtenerMascotasFiltro(FiltroMascotas filtro);
 
-
         [OperationContract]
         [WebInvoke(Method = "POST", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Wrapped, UriTemplate = "obtenermascotasfiltrofecha")]
         List<Mascota> ObtenerMascotasFiltroFecha(StringFechaFiltro filtro);
@@ -56,8 +55,10 @@ namespace ServicioMascotas
         public string Mensaje { get; set; }
     }
 
+    [DataContract]
     public class FiltroMascotas
     {
+        [DataMember]
         public DateTime? Fecha { get; set; }
     }
 
